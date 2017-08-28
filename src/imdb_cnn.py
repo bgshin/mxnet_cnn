@@ -7,6 +7,7 @@ Gets to 98.40% test accuracy after 20 epochs
 from __future__ import print_function
 import os
 os.environ['KERAS_BACKEND']='mxnet'
+os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
 import numpy as np
