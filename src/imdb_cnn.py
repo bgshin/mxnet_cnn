@@ -52,9 +52,12 @@ model.add(Activation('softmax'))
 
 model.summary()
 
+# Compile the model by specifying context with list of GPU IDs to be used during training.
+gpu_list = ["gpu(0)"]
+
 model.compile(loss='categorical_crossentropy',
               optimizer=SGD(),
-              metrics=['accuracy'])
+              metrics=['accuracy'], context=["gpu(0)"])
 
 history = model.fit(X_train, Y_train,
                     batch_size=batch_size, nb_epoch=nb_epoch,
