@@ -1,6 +1,6 @@
 import os
-os.environ['KERAS_BACKEND']='mxnet'
-# os.environ['KERAS_BACKEND']='tensorflow'
+# os.environ['KERAS_BACKEND']='mxnet'
+os.environ['KERAS_BACKEND']='tensorflow'
 
 from keras.layers import Input, Lambda, merge
 from keras.models import Model
@@ -13,8 +13,11 @@ input1_shape = (2,)
 input2_shape = (1,)
 model_input1 = Input(shape=input1_shape)
 model_input2 = Input(shape=input2_shape)
+z = model_input1
 
-# z = Lambda(lambda x: x[:,0:1])(model_input1)
+print 'keras shape = ', z._keras_shape
+print 'shape = ', z.shape
+
 z = Lambda(lambda x: x[:,1:2])(model_input1)
 
 print 'keras shape = ', z._keras_shape

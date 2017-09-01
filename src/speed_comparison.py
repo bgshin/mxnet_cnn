@@ -1,7 +1,6 @@
 import os
-os.environ['MXNET_CUDNN_AUTOTUNE_DEFAULT']='0'
-os.environ['KERAS_BACKEND']='mxnet'
-# os.environ['KERAS_BACKEND']='tensorflow'
+# os.environ['KERAS_BACKEND']='mxnet'
+os.environ['KERAS_BACKEND']='tensorflow'
 
 from keras.layers import Convolution1D
 from keras.layers import Dense, Dropout, Flatten, Input, MaxPooling1D, Embedding
@@ -13,6 +12,8 @@ import os
 import argparse
 import numpy as np
 import time
+import tensorflow as tf
+import keras.backend.tensorflow_backend as ktf
 
 
 def evaluation_summary(model, x_trn, y_trn,
@@ -160,6 +161,13 @@ def run(w2vdim, attempt, gpunum):
     epochs = 5
 
     os.environ["CUDA_VISIBLE_DEVICES"] = gpunum
+    if os.environ['KERAS_BACKEND'] == 'tensorflow':
+        def get_session(gpu_fraction=1):
+            gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction,
+                                        allow_growth=True)
+            return tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+
+        ktf.set_session(get_session())
 
     def CNNv1(model_input, max_features, embedding_matrix):
         z = Embedding(max_features,
@@ -224,8 +232,13 @@ def run(w2vdim, attempt, gpunum):
               nb_epoch=epochs,
               validation_data=(x_dev, y_dev))
 
+
+    print 'epoch_time_list'
     print checkpoint.epoch_time_list
+    print 'save_time_list'
     print checkpoint.save_time_list
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

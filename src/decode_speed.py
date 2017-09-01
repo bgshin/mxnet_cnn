@@ -1,7 +1,6 @@
-# https://faroit.github.io/keras-docs/1.2.2/models/model/#methods
 import os
-# os.environ['KERAS_BACKEND']='mxnet'
-os.environ['KERAS_BACKEND']='tensorflow'
+os.environ['KERAS_BACKEND']='mxnet'
+# os.environ['KERAS_BACKEND']='tensorflow'
 
 from keras.layers import Convolution1D
 from keras.layers import Dense, Dropout, Flatten, Input, MaxPooling1D, Embedding
@@ -11,6 +10,12 @@ from keras.callbacks import ModelCheckpoint
 from sst import load_all, Timer
 import os
 import argparse
+import numpy as np
+import time
+import tensorflow as tf
+import keras.backend.tensorflow_backend as ktf
+
+
 
 def run(w2vdim, attempt, gpunum):
     filter_sizes = (2, 3, 4, 5)
@@ -19,9 +24,18 @@ def run(w2vdim, attempt, gpunum):
     hidden_dims = 50
     maxlen = 60
     batch_size = 32
-    epochs = 30
+    epochs = 1
 
     os.environ["CUDA_VISIBLE_DEVICES"] = gpunum
+
+    if os.environ['KERAS_BACKEND']=='tensorflow':
+        def get_session(gpu_fraction=1):
+            gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction,
+                                        allow_growth=True)
+            return tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+
+        ktf.set_session(get_session())
+
 
     def CNNv1(model_input, max_features, model_path):
         z = Embedding(max_features,
@@ -50,7 +64,8 @@ def run(w2vdim, attempt, gpunum):
         model_output = Dense(5, activation="softmax")(z)
 
         model = Model(model_input, model_output)
-        model.load_weights(model_path)
+        with Timer("load model weights..."):
+            model.load_weights(model_path)
         model.compile(loss="sparse_categorical_crossentropy", optimizer="adam", metrics=["accuracy"],
                       context=["gpu(0)"])
 
@@ -67,30 +82,23 @@ def run(w2vdim, attempt, gpunum):
         model = CNNv1(model_input, max_features, modelpath)
         model.summary()
 
-    score_list = []
-    score = model.evaluate(x_trn, y_trn, batch_size=4, verbose=1)
-    print 'dev score=%f' % score[1]
-    score_list.append(score[1])
+    with Timer('decode'):
+        print model.evaluate(x_trn, y_trn, verbose=1)
 
-    score = model.evaluate(x_dev, y_dev, batch_size=4, verbose=1)
-    print 'dev score=%f' % score[1]
-    score_list.append(score[1])
 
-    score = model.evaluate(x_tst, y_tst, batch_size=4, verbose=1)
-    print 'tst score=%f' % score[1]
-    score_list.append(score[1])
-
-    print '[summary]'
-    print 'trn\tdev\ttst'
-    print '\t'.join(map(str, score_list))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', default=400, choices=[50, 300, 400], type=int)
-    parser.add_argument('-t', default=2, choices=range(10), type=int)
+    parser.add_argument('-t', default=9, choices=range(10), type=int)
     parser.add_argument('-g', default="1", choices=["0", "1", "2", "3"], type=str)
     args = parser.parse_args()
 
     run(args.d, args.t, args.g)
+
+
+
+
+
 
 
