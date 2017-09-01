@@ -1,0 +1,129 @@
+ssh://bgshin@ainos03.mathcs.emory.edu:22/home/bgshin/.virtualenvs/mxnet/bin/python -u /home/bgshin/works/mxnet_cnn/src/speed_comparison.py
+Using MXNet backend.
+/home/bgshin/.virtualenvs/mxnet/local/lib/python2.7/site-packages/scipy/sparse/sparsetools.py:20: DeprecationWarning: `scipy.sparse.sparsetools` is deprecated!
+scipy.sparse.sparsetools is a private module for scipy.sparse, and should not be used.
+  _deprecated()
+[load_all...] Elapsed: 0.00114703178406
+Symbol:activation0
+Symbol:reshape4
+Symbol:activation2
+Symbol:reshape10
+Symbol:activation4
+Symbol:reshape16
+Symbol:activation6
+Symbol:reshape22
+____________________________________________________________________________________________________
+Layer (type)                     Output Shape          Param #     Connected to                     
+====================================================================================================
+input_1 (InputLayer)             (None, 60)            0                                            
+____________________________________________________________________________________________________
+embedding_1 (Embedding)          (None, 60, 400)       1066316800  input_1[0][0]                    
+____________________________________________________________________________________________________
+convolution1d_1 (Convolution1D)  (None, 59, 32)        25632       embedding_1[0][0]                
+____________________________________________________________________________________________________
+convolution1d_2 (Convolution1D)  (None, 58, 32)        38432       embedding_1[0][0]                
+____________________________________________________________________________________________________
+convolution1d_3 (Convolution1D)  (None, 57, 32)        51232       embedding_1[0][0]                
+____________________________________________________________________________________________________
+convolution1d_4 (Convolution1D)  (None, 56, 32)        64032       embedding_1[0][0]                
+____________________________________________________________________________________________________
+maxpooling1d_1 (MaxPooling1D)    (None, 29, 32)        0           convolution1d_1[0][0]            
+____________________________________________________________________________________________________
+maxpooling1d_2 (MaxPooling1D)    (None, 29, 32)        0           convolution1d_2[0][0]            
+____________________________________________________________________________________________________
+maxpooling1d_3 (MaxPooling1D)    (None, 28, 32)        0           convolution1d_3[0][0]            
+____________________________________________________________________________________________________
+maxpooling1d_4 (MaxPooling1D)    (None, 28, 32)        0           convolution1d_4[0][0]            
+____________________________________________________________________________________________________
+flatten_1 (Flatten)              (None, 928)           0           maxpooling1d_1[0][0]             
+____________________________________________________________________________________________________
+flatten_2 (Flatten)              (None, 928)           0           maxpooling1d_2[0][0]             
+____________________________________________________________________________________________________
+flatten_3 (Flatten)              (None, 896)           0           maxpooling1d_3[0][0]             
+____________________________________________________________________________________________________
+flatten_4 (Flatten)              (None, 896)           0           maxpooling1d_4[0][0]             
+____________________________________________________________________________________________________
+merge_1 (Merge)                  (None, 3648)          0           flatten_1[0][0]                  
+                                                                   flatten_2[0][0]                  
+                                                                   flatten_3[0][0]                  
+                                                                   flatten_4[0][0]                  
+____________________________________________________________________________________________________
+dropout_1 (Dropout)              (None, 3648)          0           merge_1[0][0]                    
+____________________________________________________________________________________________________
+dense_1 (Dense)                  (None, 50)            182450      dropout_1[0][0]                  
+____________________________________________________________________________________________________
+dense_2 (Dense)                  (None, 5)             255         dense_1[0][0]                    
+====================================================================================================
+Total params: 1,066,678,833
+Trainable params: 362,033
+Non-trainable params: 1,066,316,800
+____________________________________________________________________________________________________
+[Build model...] Elapsed: 14.1521780491
+my callback init
+Train on 8544 samples, validate on 1101 samples
+Epoch 1/5
+[16:39:28] src/operator/././cudnn_algoreg-inl.h:112: Running performance tests to find the best convolution algorithm, this can take a while... (setting env variable MXNET_CUDNN_AUTOTUNE_DEFAULT to 0 to disable)
+/home/bgshin/.virtualenvs/mxnet/local/lib/python2.7/site-packages/mxnet/module/bucketing_module.py:385: UserWarning: Optimizer created manually outside Module but rescale_grad is not normalized to 1.0/batch_size/num_workers (1.0 vs. 0.03125). Is this intended?
+  force_init=force_init)
+8384/8544 [============================>.] - ETA: 0s - loss: 1.5303 - acc: 0.3144
+Epoch 00000: val_acc improved from -inf to 0.38420, saving model to ./model/newbest-400-9
+trn score=0.395716
+dev score=0.384196
+tst score=0.394570
+[summary] [Epoch]
+trn	dev	tst
+0.395716292135	0.384196185286	0.394570135747
+[Best]
+0.395716292135	0.384196185286	0.394570135747
+8544/8544 [==============================] - 69s - loss: 1.5287 - acc: 0.3144 - val_loss: 1.3878 - val_acc: 0.3842
+Epoch 2/5
+8256/8544 [===========================>..] - ETA: 0s - loss: 1.3886 - acc: 0.3834
+Epoch 00001: val_acc improved from 0.38420 to 0.40145, saving model to ./model/newbest-400-9
+trn score=0.441128
+dev score=0.401453
+tst score=0.430769
+[summary] [Epoch]
+trn	dev	tst
+0.441128277154	0.401453224342	0.430769230769
+[Best]
+0.441128277154	0.401453224342	0.430769230769
+8544/8544 [==============================] - 34s - loss: 1.3865 - acc: 0.3851 - val_loss: 1.2988 - val_acc: 0.4015
+Epoch 3/5
+8352/8544 [============================>.] - ETA: 0s - loss: 1.3294 - acc: 0.4144
+Epoch 00002: val_acc improved from 0.40145 to 0.42144, saving model to ./model/newbest-400-9
+trn score=0.476007
+dev score=0.421435
+tst score=0.450226
+[summary] [Epoch]
+trn	dev	tst
+0.476006554307	0.421435059037	0.450226244344
+[Best]
+0.476006554307	0.421435059037	0.450226244344
+8544/8544 [==============================] - 34s - loss: 1.3279 - acc: 0.4148 - val_loss: 1.2724 - val_acc: 0.4214
+Epoch 4/5
+8384/8544 [============================>.] - ETA: 0s - loss: 1.2959 - acc: 0.4314
+Epoch 00003: val_acc improved from 0.42144 to 0.42507, saving model to ./model/newbest-400-9
+trn score=0.478230
+dev score=0.425068
+tst score=0.446154
+[summary] [Epoch]
+trn	dev	tst
+0.478230337079	0.425068119891	0.446153846154
+[Best]
+0.478230337079	0.425068119891	0.446153846154
+8544/8544 [==============================] - 35s - loss: 1.2961 - acc: 0.4306 - val_loss: 1.2665 - val_acc: 0.4251
+Epoch 5/5
+8480/8544 [============================>.] - ETA: 0s - loss: 1.2702 - acc: 0.4399
+Epoch 00004: val_acc did not improve
+8544/8544 [==============================] - 1s - loss: 1.2703 - acc: 0.4397 - val_loss: 1.2669 - val_acc: 0.4169
+[Best:on_train_end]
+0.478230337079	0.425068119891	0.446153846154
+[loading a model] Elapsed: 23.0318651199
+epoch_time_list
+[35.456714153289795, 2.8258581161499023, 2.670397996902466, 2.6770477294921875, -31.632535219192505]
+save_time_list
+[33.643040895462036, 31.248637914657593, 31.89375114440918, 32.75033712387085]
+8320/8544 [============================>.] - ETA: 0s[1.1867852260110976, 0.4782303370786517]
+[decode] Elapsed: 1.14643311501
+
+Process finished with exit code 0

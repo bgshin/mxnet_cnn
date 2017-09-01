@@ -1,0 +1,151 @@
+ssh://bgshin@ainos03.mathcs.emory.edu:22/home/bgshin/.virtualenvs/mxnet/bin/python -u /home/bgshin/works/mxnet_cnn/src/speed_comparison.py
+Using TensorFlow backend.
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcublas.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcudnn.so.5 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcufft.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcuda.so.1 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcurand.so.8.0 locally
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE3 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX2 instructions, but these are available on your machine and could speed up CPU computations.
+W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use FMA instructions, but these are available on your machine and could speed up CPU computations.
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:885] Found device 0 with properties: 
+name: TITAN X (Pascal)
+major: 6 minor: 1 memoryClockRate (GHz) 1.531
+pciBusID 0000:03:00.0
+Total memory: 11.90GiB
+Free memory: 11.76GiB
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:906] DMA: 0 
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:916] 0:   Y 
+I tensorflow/core/common_runtime/gpu/gpu_device.cc:975] Creating TensorFlow device (/gpu:0) -> (device: 0, name: TITAN X (Pascal), pci bus id: 0000:03:00.0)
+[load_all...] Elapsed: 0.0018949508667
+Tensor("Relu:0", shape=(?, 59, 32), dtype=float32)
+Tensor("Squeeze_1:0", shape=(?, 29, 32), dtype=float32)
+Tensor("Relu_1:0", shape=(?, 58, 32), dtype=float32)
+Tensor("Squeeze_3:0", shape=(?, 29, 32), dtype=float32)
+Tensor("Relu_2:0", shape=(?, 57, 32), dtype=float32)
+Tensor("Squeeze_5:0", shape=(?, 28, 32), dtype=float32)
+Tensor("Relu_3:0", shape=(?, 56, 32), dtype=float32)
+Tensor("Squeeze_7:0", shape=(?, 28, 32), dtype=float32)
+____________________________________________________________________________________________________
+Layer (type)                     Output Shape          Param #     Connected to                     
+====================================================================================================
+input_1 (InputLayer)             (None, 60)            0                                            
+____________________________________________________________________________________________________
+embedding_1 (Embedding)          (None, 60, 400)       1066316800  input_1[0][0]                    
+____________________________________________________________________________________________________
+convolution1d_1 (Convolution1D)  (None, 59, 32)        25632       embedding_1[0][0]                
+____________________________________________________________________________________________________
+convolution1d_2 (Convolution1D)  (None, 58, 32)        38432       embedding_1[0][0]                
+____________________________________________________________________________________________________
+convolution1d_3 (Convolution1D)  (None, 57, 32)        51232       embedding_1[0][0]                
+____________________________________________________________________________________________________
+convolution1d_4 (Convolution1D)  (None, 56, 32)        64032       embedding_1[0][0]                
+____________________________________________________________________________________________________
+maxpooling1d_1 (MaxPooling1D)    (None, 29, 32)        0           convolution1d_1[0][0]            
+____________________________________________________________________________________________________
+maxpooling1d_2 (MaxPooling1D)    (None, 29, 32)        0           convolution1d_2[0][0]            
+____________________________________________________________________________________________________
+maxpooling1d_3 (MaxPooling1D)    (None, 28, 32)        0           convolution1d_3[0][0]            
+____________________________________________________________________________________________________
+maxpooling1d_4 (MaxPooling1D)    (None, 28, 32)        0           convolution1d_4[0][0]            
+____________________________________________________________________________________________________
+flatten_1 (Flatten)              (None, 928)           0           maxpooling1d_1[0][0]             
+____________________________________________________________________________________________________
+flatten_2 (Flatten)              (None, 928)           0           maxpooling1d_2[0][0]             
+____________________________________________________________________________________________________
+flatten_3 (Flatten)              (None, 896)           0           maxpooling1d_3[0][0]             
+____________________________________________________________________________________________________
+flatten_4 (Flatten)              (None, 896)           0           maxpooling1d_4[0][0]             
+____________________________________________________________________________________________________
+merge_1 (Merge)                  (None, 3648)          0           flatten_1[0][0]                  
+                                                                   flatten_2[0][0]                  
+                                                                   flatten_3[0][0]                  
+                                                                   flatten_4[0][0]                  
+____________________________________________________________________________________________________
+dropout_1 (Dropout)              (None, 3648)          0           merge_1[0][0]                    
+____________________________________________________________________________________________________
+dense_1 (Dense)                  (None, 50)            182450      dropout_1[0][0]                  
+____________________________________________________________________________________________________
+dense_2 (Dense)                  (None, 5)             255         dense_1[0][0]                    
+====================================================================================================
+Total params: 1,066,678,833
+Trainable params: 362,033
+Non-trainable params: 1,066,316,800
+____________________________________________________________________________________________________
+[Build model...] Elapsed: 11.8207039833
+my callback init
+/home/bgshin/.virtualenvs/mxnet/local/lib/python2.7/site-packages/keras/backend/tensorflow_backend.py:1960: UserWarning: Expected no kwargs, you passed 1
+kwargs passed to function are ignored with Tensorflow backend
+  warnings.warn('\n'.join(msg))
+Train on 8544 samples, validate on 1101 samples
+Epoch 1/5
+8352/8544 [============================>.] - ETA: 0s - loss: 1.5243 - acc: 0.3101
+Epoch 00000: val_acc improved from -inf to 0.40781, saving model to ./model/newbest-400-9
+trn score=0.448151
+dev score=0.407811
+tst score=0.433484
+[summary] [Epoch]
+trn	dev	tst
+0.448150749064	0.407811080836	0.433484162896
+[Best]
+0.448150749064	0.407811080836	0.433484162896
+8544/8544 [==============================] - 15s - loss: 1.5207 - acc: 0.3111 - val_loss: 1.3466 - val_acc: 0.4078
+Epoch 2/5
+8416/8544 [============================>.] - ETA: 0s - loss: 1.3548 - acc: 0.3973
+Epoch 00001: val_acc improved from 0.40781 to 0.41962, saving model to ./model/newbest-400-9
+trn score=0.448853
+dev score=0.419619
+tst score=0.434389
+[summary] [Epoch]
+trn	dev	tst
+0.448852996255	0.41961852861	0.434389140271
+[Best]
+0.448852996255	0.41961852861	0.434389140271
+8544/8544 [==============================] - 14s - loss: 1.3549 - acc: 0.3972 - val_loss: 1.2824 - val_acc: 0.4196
+Epoch 3/5
+8384/8544 [============================>.] - ETA: 0s - loss: 1.3003 - acc: 0.4299
+Epoch 00002: val_acc improved from 0.41962 to 0.44051, saving model to ./model/newbest-400-9
+trn score=0.491924
+dev score=0.440509
+tst score=0.469231
+[summary] [Epoch]
+trn	dev	tst
+0.491924157303	0.44050862852	0.469230769231
+[Best]
+0.491924157303	0.44050862852	0.469230769231
+8544/8544 [==============================] - 13s - loss: 1.3015 - acc: 0.4286 - val_loss: 1.2635 - val_acc: 0.4405
+Epoch 4/5
+8352/8544 [============================>.] - ETA: 0s - loss: 1.2636 - acc: 0.4435
+Epoch 00003: val_acc improved from 0.44051 to 0.44142, saving model to ./model/newbest-400-9
+trn score=0.510651
+dev score=0.441417
+tst score=0.469683
+[summary] [Epoch]
+trn	dev	tst
+0.510650749064	0.441416893733	0.469683257919
+[Best]
+0.510650749064	0.441416893733	0.469683257919
+8544/8544 [==============================] - 25s - loss: 1.2636 - acc: 0.4435 - val_loss: 1.2526 - val_acc: 0.4414
+Epoch 5/5
+8512/8544 [============================>.] - ETA: 0s - loss: 1.2290 - acc: 0.4524
+Epoch 00004: val_acc improved from 0.44142 to 0.45777, saving model to ./model/newbest-400-9
+trn score=0.540496
+dev score=0.457766
+tst score=0.478281
+[summary] [Epoch]
+trn	dev	tst
+0.540496254682	0.457765667575	0.478280542986
+[Best]
+0.540496254682	0.457765667575	0.478280542986
+8544/8544 [==============================] - 13s - loss: 1.2287 - acc: 0.4521 - val_loss: 1.2355 - val_acc: 0.4578
+[Best:on_train_end]
+0.540496254682	0.457765667575	0.478280542986
+epoch_time_list
+[5.550595045089722, 4.484508991241455, 4.497514963150024, 4.448364019393921, 4.520492076873779]
+save_time_list
+[9.590286016464233, 10.15714693069458, 8.562417030334473, 21.44404911994934, 9.359024047851562]
+
+Process finished with exit code 0

@@ -1,0 +1,74 @@
+ssh://bgshin@ainos03.mathcs.emory.edu:22/home/bgshin/.virtualenvs/mxnet/bin/python -u /home/bgshin/works/mxnet_cnn/src/decode_speed.py
+Using MXNet backend.
+/home/bgshin/.virtualenvs/mxnet/local/lib/python2.7/site-packages/scipy/sparse/sparsetools.py:20: DeprecationWarning: `scipy.sparse.sparsetools` is deprecated!
+scipy.sparse.sparsetools is a private module for scipy.sparse, and should not be used.
+  _deprecated()
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcublas.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcudnn.so.5 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcufft.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcuda.so.1 locally
+I tensorflow/stream_executor/dso_loader.cc:135] successfully opened CUDA library libcurand.so.8.0 locally
+[load_all...] Elapsed: 0.00150609016418
+Symbol:activation0
+Symbol:reshape4
+Symbol:activation2
+Symbol:reshape10
+Symbol:activation4
+Symbol:reshape16
+Symbol:activation6
+Symbol:reshape22
+[load model weights...] Elapsed: 42.1980059147
+____________________________________________________________________________________________________
+Layer (type)                     Output Shape          Param #     Connected to                     
+====================================================================================================
+input_1 (InputLayer)             (None, 60)            0                                            
+____________________________________________________________________________________________________
+embedding_1 (Embedding)          (None, 60, 400)       1066316800  input_1[0][0]                    
+____________________________________________________________________________________________________
+convolution1d_1 (Convolution1D)  (None, 59, 32)        25632       embedding_1[0][0]                
+____________________________________________________________________________________________________
+convolution1d_2 (Convolution1D)  (None, 58, 32)        38432       embedding_1[0][0]                
+____________________________________________________________________________________________________
+convolution1d_3 (Convolution1D)  (None, 57, 32)        51232       embedding_1[0][0]                
+____________________________________________________________________________________________________
+convolution1d_4 (Convolution1D)  (None, 56, 32)        64032       embedding_1[0][0]                
+____________________________________________________________________________________________________
+maxpooling1d_1 (MaxPooling1D)    (None, 29, 32)        0           convolution1d_1[0][0]            
+____________________________________________________________________________________________________
+maxpooling1d_2 (MaxPooling1D)    (None, 29, 32)        0           convolution1d_2[0][0]            
+____________________________________________________________________________________________________
+maxpooling1d_3 (MaxPooling1D)    (None, 28, 32)        0           convolution1d_3[0][0]            
+____________________________________________________________________________________________________
+maxpooling1d_4 (MaxPooling1D)    (None, 28, 32)        0           convolution1d_4[0][0]            
+____________________________________________________________________________________________________
+flatten_1 (Flatten)              (None, 928)           0           maxpooling1d_1[0][0]             
+____________________________________________________________________________________________________
+flatten_2 (Flatten)              (None, 928)           0           maxpooling1d_2[0][0]             
+____________________________________________________________________________________________________
+flatten_3 (Flatten)              (None, 896)           0           maxpooling1d_3[0][0]             
+____________________________________________________________________________________________________
+flatten_4 (Flatten)              (None, 896)           0           maxpooling1d_4[0][0]             
+____________________________________________________________________________________________________
+merge_1 (Merge)                  (None, 3648)          0           flatten_1[0][0]                  
+                                                                   flatten_2[0][0]                  
+                                                                   flatten_3[0][0]                  
+                                                                   flatten_4[0][0]                  
+____________________________________________________________________________________________________
+dropout_1 (Dropout)              (None, 3648)          0           merge_1[0][0]                    
+____________________________________________________________________________________________________
+dense_1 (Dense)                  (None, 50)            182450      dropout_1[0][0]                  
+____________________________________________________________________________________________________
+dense_2 (Dense)                  (None, 5)             255         dense_1[0][0]                    
+====================================================================================================
+Total params: 1,066,678,833
+Trainable params: 362,033
+Non-trainable params: 1,066,316,800
+____________________________________________________________________________________________________
+[Build model...] Elapsed: 42.2612581253
+[17:32:25] src/operator/././cudnn_algoreg-inl.h:112: Running performance tests to find the best convolution algorithm, this can take a while... (setting env variable MXNET_CUDNN_AUTOTUNE_DEFAULT to 0 to disable)
+/home/bgshin/.virtualenvs/mxnet/local/lib/python2.7/site-packages/mxnet/module/bucketing_module.py:385: UserWarning: Optimizer created manually outside Module but rescale_grad is not normalized to 1.0/batch_size/num_workers (1.0 vs. 0.03125). Is this intended?
+  force_init=force_init)
+8128/8544 [===========================>..] - ETA: 2s[1.4002108538195435, 0.39536516853932585]
+[decode] Elapsed: 51.1507139206
+
+Process finished with exit code 0
