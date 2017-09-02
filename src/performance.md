@@ -34,7 +34,7 @@
 | Decoding 8k Samples | 18.11 | 1.57 |
 
 * Time of Loading a model varies a lot for both of the backends.
-* When decoding using mxNet, actual decoding time seems to be short (less than 2 secs). However, for some reason, the function call of "model.evaluate" lasted up to 50 secs.
+* When decoding using mxNet, actual decoding time seems to be short (less than 2 secs). However, for some reason, the function call of "model.predict" lasted up to 50 secs.
 
 
 ## Log data
