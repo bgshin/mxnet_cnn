@@ -29,12 +29,12 @@
 ### Decode
 | Job | mxNet | Tensorflow |
 | ------ | ------ | ------ |
-| Compiling a Model (+loading a trained model) | 42.26 | 23.84 |
-| '-- Loading a Trained Model | 42.20 | 23.61 |
-| Decoding 8k Samples | 51.15 | 1.65 |
+| Compiling a Model (+loading a trained model) | 20.27 | 18.55 |
+| '-- Loading a Trained Model | 20.21 | 18.33 |
+| Decoding 8k Samples | 18.11 | 1.57 |
 
 * Time of Loading a model varies a lot for both of the backends.
-* When decoding using mxNet, actual decoding time seems to be short (less than 2 secs). However, for some reason, the function call for "model.evaluate" lasted up to 50 secs.
+* When decoding using mxNet, actual decoding time seems to be short (less than 2 secs). However, for some reason, the function call of "model.evaluate" lasted up to 50 secs.
 
 
 ## Log data

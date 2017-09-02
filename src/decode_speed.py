@@ -83,14 +83,14 @@ def run(w2vdim, attempt, gpunum):
         model.summary()
 
     with Timer('decode'):
-        print model.evaluate(x_trn, y_trn, verbose=1)
+        print model.predict(x_trn, verbose=1)
 
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', default=400, choices=[50, 300, 400], type=int)
-    parser.add_argument('-t', default=9, choices=range(10), type=int)
+    parser.add_argument('-t', default=8, choices=range(10), type=int)
     parser.add_argument('-g', default="1", choices=["0", "1", "2", "3"], type=str)
     args = parser.parse_args()
 

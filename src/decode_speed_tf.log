@@ -20,7 +20,7 @@ Free memory: 11.76GiB
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:906] DMA: 0 
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:916] 0:   Y 
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:975] Creating TensorFlow device (/gpu:0) -> (device: 0, name: TITAN X (Pascal), pci bus id: 0000:03:00.0)
-[load_all...] Elapsed: 0.00154900550842
+[load_all...] Elapsed: 0.00176382064819
 Tensor("Relu:0", shape=(?, 59, 32), dtype=float32)
 Tensor("Squeeze_1:0", shape=(?, 29, 32), dtype=float32)
 Tensor("Relu_1:0", shape=(?, 58, 32), dtype=float32)
@@ -29,8 +29,7 @@ Tensor("Relu_2:0", shape=(?, 57, 32), dtype=float32)
 Tensor("Squeeze_5:0", shape=(?, 28, 32), dtype=float32)
 Tensor("Relu_3:0", shape=(?, 56, 32), dtype=float32)
 Tensor("Squeeze_7:0", shape=(?, 28, 32), dtype=float32)
-E tensorflow/stream_executor/cuda/cuda_driver.cc:1002] failed to allocate 3.90G (4191092736 bytes) from device: CUDA_ERROR_OUT_OF_MEMORY
-[load model weights...] Elapsed: 23.6076271534
+[load model weights...] Elapsed: 18.3264000416
 ____________________________________________________________________________________________________
 Layer (type)                     Output Shape          Param #     Connected to                     
 ====================================================================================================
@@ -77,11 +76,17 @@ Total params: 1,066,678,833
 Trainable params: 362,033
 Non-trainable params: 1,066,316,800
 ____________________________________________________________________________________________________
-[Build model...] Elapsed: 23.8376200199
+[Build model...] Elapsed: 18.5466117859
 /home/bgshin/.virtualenvs/mxnet/local/lib/python2.7/site-packages/keras/backend/tensorflow_backend.py:1960: UserWarning: Expected no kwargs, you passed 1
 kwargs passed to function are ignored with Tensorflow backend
   warnings.warn('\n'.join(msg))
-8192/8544 [===========================>..] - ETA: 0s[1.4002108364069505, 0.39536516853932585]
-[decode] Elapsed: 1.65399503708
+8032/8544 [===========================>..] - ETA: 0s[[ 0.05999704  0.1740804   0.24400324  0.34514919  0.17677017]
+ [ 0.03255374  0.14791222  0.17312025  0.46961838  0.17679545]
+ [ 0.02046008  0.08819996  0.19549742  0.48383766  0.21200483]
+ ..., 
+ [ 0.02167928  0.11132785  0.14273359  0.50872862  0.21553074]
+ [ 0.44419608  0.42486733  0.09550179  0.03380726  0.00162749]
+ [ 0.2992917   0.37859312  0.23531501  0.07421164  0.01258859]]
+[decode] Elapsed: 1.57036399841
 
 Process finished with exit code 0
