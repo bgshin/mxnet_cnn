@@ -8,7 +8,7 @@ from keras.layers import Dense, Dropout, Flatten, Input, MaxPooling1D, Embedding
 from keras.layers import merge
 from keras.models import Model
 from keras.callbacks import ModelCheckpoint
-from dataset import load_sst, Timer
+from dataset import load_sst, load_s17, Timer
 import os
 import argparse
 
@@ -59,7 +59,7 @@ def run(attempt, gpunum):
 
     with Timer("load_all..."):
         (x_trn, y_trn), (x_dev, y_dev), (x_tst, y_tst), embedding, max_features = \
-            load_sst(w2vdim, maxlen, source='file')
+            load_s17(w2vdim, maxlen, source='file')
 
     with Timer("Build model..."):
         input_shape = (maxlen,)
@@ -68,7 +68,7 @@ def run(attempt, gpunum):
         model.summary()
 
     # checkpoint
-    filepath='./model/newbestsst-%d-%d' % (w2vdim, attempt)
+    filepath='./model/newbests17-%d-%d' % (w2vdim, attempt)
 
     checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
     callbacks_list = [checkpoint]
