@@ -2,13 +2,14 @@
 import os
 os.environ['KERAS_BACKEND']='mxnet'
 os.environ['MXNET_CUDNN_AUTOTUNE_DEFAULT']='0'
+# os.environ['KERAS_BACKEND']='tensorflow'
 
 from keras.layers import Convolution1D
 from keras.layers import Dense, Dropout, Flatten, Input, MaxPooling1D, Embedding
 from keras.layers import merge
 from keras.models import Model
 from keras.callbacks import ModelCheckpoint
-from dataset import load_sst, load_s17, Timer
+from dataset import load_s17, Timer
 import os
 import argparse
 
@@ -19,15 +20,14 @@ def run(attempt, gpunum):
     dropout_prob = 0.8
     hidden_dims = 50
     maxlen = 60
-    batch_size = 100
-    epochs = 100
+    batch_size = 32
+    epochs = 30
 
     os.environ["CUDA_VISIBLE_DEVICES"] = gpunum
 
-    def CNNv1(model_input, max_features, embedding_matrix):
+    def CNNv1(model_input, max_features, model_path):
         z = Embedding(max_features,
                       w2vdim,
-                      weights=[embedding_matrix],
                       input_length=maxlen,
                       trainable=False)(model_input)
 
@@ -52,6 +52,7 @@ def run(attempt, gpunum):
         model_output = Dense(3, activation="softmax")(z)
 
         model = Model(model_input, model_output)
+        model.load_weights(model_path)
         model.compile(loss="sparse_categorical_crossentropy", optimizer="adam", metrics=["accuracy"],
                       context=["gpu(0)"])
 
@@ -64,21 +65,26 @@ def run(attempt, gpunum):
     with Timer("Build model..."):
         input_shape = (maxlen,)
         model_input = Input(shape=input_shape)
-        model = CNNv1(model_input, max_features, embedding)
+        modelpath = './model/newbests17-%d-%d' % (w2vdim, attempt)
+        model = CNNv1(model_input, max_features, modelpath)
         model.summary()
 
-    # checkpoint
-    filepath='./model/newbests17-%d-%d' % (w2vdim, attempt)
+    score_list = []
+    score = model.evaluate(x_trn, y_trn, batch_size=4, verbose=1)
+    print 'dev score=%f' % score[1]
+    score_list.append(score[1])
 
-    checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
-    callbacks_list = [checkpoint]
+    score = model.evaluate(x_dev, y_dev, batch_size=4, verbose=1)
+    print 'dev score=%f' % score[1]
+    score_list.append(score[1])
 
-    model.fit(x_trn, y_trn,
-              batch_size=batch_size,
-              shuffle=True,
-              callbacks=callbacks_list,
-              nb_epoch=epochs,
-              validation_data=(x_dev, y_dev))
+    score = model.evaluate(x_tst, y_tst, batch_size=4, verbose=1)
+    print 'tst score=%f' % score[1]
+    score_list.append(score[1])
+
+    print '[summary]'
+    print 'trn\tdev\ttst'
+    print '\t'.join(map(str, score_list))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -87,10 +93,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     run(args.t, args.g)
-
-
-
-
-
 
 

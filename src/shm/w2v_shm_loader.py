@@ -24,7 +24,7 @@ maxlen = 60
 
 def load_sst_from_file():
     dim = 400
-    embedding, vocab = load_embedding(w2v_path=SST_W2V_PATH)
+    embedding, vocab = load_embedding(w2v_path=SST_W2V_PATH, pathbase='../../data/w2v/')
     shm_embedding = set_share_memory(embedding, 'sst_embedding_%d' % dim)
 
     (x_trn, y_trn) = load_sst_data(vocab, target='trn', pathbase='../../data/sst/')
@@ -47,7 +47,7 @@ def load_sst_from_file():
 
 def load_s17_from_file():
     dim = 400
-    embedding, vocab = load_embedding(w2v_path=S17_W2V_PATH)
+    embedding, vocab = load_embedding(w2v_path=S17_W2V_PATH, pathbase='../../data/w2v/')
     shm_embedding = set_share_memory(embedding, 's17_embedding_%d' % dim)
 
     (x_trn, y_trn) = load_s17_data(vocab, target='trn', pathbase='../../data/s17/')

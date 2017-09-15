@@ -101,15 +101,15 @@ def load_embedding(w2v_path=SST_W2V_PATH, pathbase='../data/w2v/'):
 def load_sst(dim, maxlen, source='file'):
     if source=='shm':
         max_features = 2665792
-        embedding = SharedNPArray(shape=(max_features, 400), dtype=np.float32, tag='embedding_%d' % dim,
+        embedding = SharedNPArray(shape=(max_features, 400), dtype=np.float32, tag='sst_embedding_%d' % dim,
                                   create=False)
 
-        x_trn = SharedNPArray(shape=(8544, 60), dtype=np.int32, tag='x_trn_%d' % dim, create=False)
-        y_trn = SharedNPArray(shape=(8544,), dtype=np.int64, tag='y_trn_%d' % dim, create=False)
-        x_dev = SharedNPArray(shape=(1101, 60), dtype=np.int32, tag='x_dev_%d' % dim, create=False)
-        y_dev = SharedNPArray(shape=(1101,), dtype=np.int64, tag='y_dev_%d' % dim, create=False)
-        x_tst = SharedNPArray(shape=(2210, 60), dtype=np.int32, tag='x_tst_%d' % dim, create=False)
-        y_tst = SharedNPArray(shape=(2210,), dtype=np.int64, tag='y_tst_%d' % dim, create=False)
+        x_trn = SharedNPArray(shape=(8544, 60), dtype=np.int32, tag='sst_x_trn_%d' % dim, create=False)
+        y_trn = SharedNPArray(shape=(8544,), dtype=np.int64, tag='sst_y_trn_%d' % dim, create=False)
+        x_dev = SharedNPArray(shape=(1101, 60), dtype=np.int32, tag='sst_x_dev_%d' % dim, create=False)
+        y_dev = SharedNPArray(shape=(1101,), dtype=np.int64, tag='sst_y_dev_%d' % dim, create=False)
+        x_tst = SharedNPArray(shape=(2210, 60), dtype=np.int32, tag='sst_x_tst_%d' % dim, create=False)
+        y_tst = SharedNPArray(shape=(2210,), dtype=np.int64, tag='sst_y_tst_%d' % dim, create=False)
 
 
     else: # source=='file
@@ -129,15 +129,15 @@ def load_sst(dim, maxlen, source='file'):
 def load_s17(dim, maxlen, source='file'):
     if source=='shm':
         max_features = 3676787
-        embedding = SharedNPArray(shape=(max_features, 400), dtype=np.float32, tag='embedding_%d' % dim,
+        embedding = SharedNPArray(shape=(max_features, 400), dtype=np.float32, tag='s17_embedding_%d' % dim,
                                   create=False)
 
-        x_trn = SharedNPArray(shape=(8544, 60), dtype=np.int32, tag='x_trn_%d' % dim, create=False)
-        y_trn = SharedNPArray(shape=(8544,), dtype=np.int64, tag='y_trn_%d' % dim, create=False)
-        x_dev = SharedNPArray(shape=(1101, 60), dtype=np.int32, tag='x_dev_%d' % dim, create=False)
-        y_dev = SharedNPArray(shape=(1101,), dtype=np.int64, tag='y_dev_%d' % dim, create=False)
-        x_tst = SharedNPArray(shape=(2210, 60), dtype=np.int32, tag='x_tst_%d' % dim, create=False)
-        y_tst = SharedNPArray(shape=(2210,), dtype=np.int64, tag='y_tst_%d' % dim, create=False)
+        x_trn = SharedNPArray(shape=(15385, 60), dtype=np.int32, tag='s17_x_trn_%d' % dim, create=False)
+        y_trn = SharedNPArray(shape=(15385,), dtype=np.int64, tag='s17_y_trn_%d' % dim, create=False)
+        x_dev = SharedNPArray(shape=(1588, 60), dtype=np.int32, tag='s17_x_dev_%d' % dim, create=False)
+        y_dev = SharedNPArray(shape=(1588,), dtype=np.int64, tag='s17_y_dev_%d' % dim, create=False)
+        x_tst = SharedNPArray(shape=(20632, 60), dtype=np.int32, tag='s17_x_tst_%d' % dim, create=False)
+        y_tst = SharedNPArray(shape=(20632,), dtype=np.int64, tag='s17_y_tst_%d' % dim, create=False)
 
 
     else: # source=='file
