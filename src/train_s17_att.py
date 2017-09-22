@@ -176,7 +176,7 @@ def run(attempt, gpunum, version):
     w2vdim = 400
     maxlen = 60
     batch_size = 200
-    epochs = 100
+    epochs = 30
 
     def CNNAttention_v1(model_input):
         print('model version V1')
