@@ -22,8 +22,8 @@ class Timer(object):
 
     def __exit__(self, type, value, traceback):
         if self.name:
-            print '[%s]' % self.name,
-        print 'Elapsed: %s' % (time.time() - self.tstart)
+            print('[%s]' % self.name)
+        print('Elapsed: %s' % (time.time() - self.tstart))
 
 
 def load_s17_data(vocab, target='trn', pathbase='../data/s17/'):
@@ -131,6 +131,7 @@ def load_s17(dim, maxlen, source='file'):
         max_features = 3676787
         embedding = SharedNPArray(shape=(max_features, 400), dtype=np.float32, tag='s17_embedding_%d' % dim,
                                   create=False)
+        embedding = embedding._SharedNPArray__np_array
 
         x_trn = SharedNPArray(shape=(15385, 60), dtype=np.int32, tag='s17_x_trn_%d' % dim, create=False)
         y_trn = SharedNPArray(shape=(15385,), dtype=np.int64, tag='s17_y_trn_%d' % dim, create=False)
@@ -138,6 +139,20 @@ def load_s17(dim, maxlen, source='file'):
         y_dev = SharedNPArray(shape=(1588,), dtype=np.int64, tag='s17_y_dev_%d' % dim, create=False)
         x_tst = SharedNPArray(shape=(20632, 60), dtype=np.int32, tag='s17_x_tst_%d' % dim, create=False)
         y_tst = SharedNPArray(shape=(20632,), dtype=np.int64, tag='s17_y_tst_%d' % dim, create=False)
+
+        x_trn = x_trn._SharedNPArray__np_array
+        y_trn = y_trn._SharedNPArray__np_array
+
+        x_dev = x_dev._SharedNPArray__np_array
+        y_dev = y_dev._SharedNPArray__np_array
+
+        x_tst = x_tst._SharedNPArray__np_array
+        y_tst = y_tst._SharedNPArray__np_array
+
+        x_trn = embedding[x_trn]
+        x_dev = embedding[x_dev]
+        x_tst = embedding[x_tst]
+
 
 
     else: # source=='file

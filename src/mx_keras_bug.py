@@ -1,6 +1,6 @@
 import os
-# os.environ['KERAS_BACKEND']='mxnet'
-os.environ['KERAS_BACKEND']='tensorflow'
+os.environ['KERAS_BACKEND']='mxnet'
+# os.environ['KERAS_BACKEND']='tensorflow'
 
 from keras.layers import Input, Lambda, merge
 from keras.models import Model

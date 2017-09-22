@@ -70,7 +70,7 @@ def run(attempt, gpunum):
         model.summary()
 
     score_list = []
-    score = model.evaluate(x_trn, y_trn, batch_size=4, verbose=1)
+    score = model.predict(x_trn, y_trn, batch_size=4, verbose=1)
     print 'dev score=%f' % score[1]
     score_list.append(score[1])
 

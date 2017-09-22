@@ -3,9 +3,11 @@ import sys
 import mmap
 import ctypes
 import posix_ipc
-from _multiprocessing import address_of_buffer
+# from _multiprocessing import address_of_buffer
 from string import ascii_letters, digits
 
+def address_of_buffer(buf):
+    return ctypes.addressof(ctypes.c_char.from_buffer(buf))
 
 valid_chars = frozenset("-_. %s%s" % (ascii_letters, digits))
 
@@ -16,7 +18,7 @@ class ShmemBufferWrapper(object):
         self._owner = create
         self.size = size
 
-        assert 0 <= size < sys.maxint
+        assert 0 <= size < sys.maxsize
         flag = (0, posix_ipc.O_CREX)[create]
         if create:
             self._mem = posix_ipc.SharedMemory(tag, flags=flag, size=size)
@@ -27,9 +29,13 @@ class ShmemBufferWrapper(object):
 
 
     def get_address(self):
-        addr, size = address_of_buffer(self._map)
-        assert size >= self.size
+        assert self._map.size() == self.size
+        addr = address_of_buffer(self._map)
         return addr
+        #
+        # addr, size = address_of_buffer(self._map)
+        # assert size >= self.size
+        # return addr
 
 
     def __del__(self):
@@ -46,14 +52,15 @@ def ShmemRawArray(type_, size_or_initializer, tag, create=True):
     if isinstance(size_or_initializer, int):
         type_ = type_ * size_or_initializer
     else:
-        type_ = type_ * len(size_or_initializer)
+        type_ = type_ * size_or_initializer
+        # type_ = type_ * len(size_or_initializer)
 
     buffer = ShmemBufferWrapper(tag, ctypes.sizeof(type_), create=create)
     obj = type_.from_address(buffer.get_address())
     obj._buffer = buffer
 
-    if not isinstance(size_or_initializer, int):
-        obj.__init__(*size_or_initializer)
+    # if not isinstance(size_or_initializer, int):
+    #     obj.__init__(*size_or_initializer)
 
     return obj
 
