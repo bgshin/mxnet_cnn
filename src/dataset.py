@@ -13,6 +13,8 @@ S17_DATA_PATH = 's17/'
 S17_W2V_PATH = 'w2v-400-semevaltrndev.gnsm'
 
 
+
+
 class Timer(object):
     def __init__(self, name=None):
         self.name = name
@@ -149,9 +151,20 @@ def load_s17(dim, maxlen, source='file'):
         x_tst = x_tst._SharedNPArray__np_array
         y_tst = y_tst._SharedNPArray__np_array
 
-        x_trn = embedding[x_trn]
-        x_dev = embedding[x_dev]
+        x_newdev = np.concatenate((x_trn[11880:], x_dev))
+        y_newdev = np.concatenate((y_trn[11880:], y_dev))
+
+        x_newtrn = x_trn[:11880]
+        y_newtrn = y_trn[:11880]
+
+        x_trn = embedding[x_newtrn]
+        x_dev = embedding[x_newdev]
+        # x_trn = embedding[x_trn]
+        # x_dev = embedding[x_dev]
         x_tst = embedding[x_tst]
+
+        y_trn = y_newtrn
+        y_dev = y_newdev
 
 
 

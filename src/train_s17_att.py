@@ -11,6 +11,7 @@ import os
 from keras import backend as K
 import argparse
 import numpy as np
+from sklearn.metrics import confusion_matrix
 from keras.engine.topology import Layer
 
 # class AttentionGram(Layer):
@@ -42,39 +43,159 @@ from keras.engine.topology import Layer
 #
 #
 
+
+def precision(y_true, y_pred):
+    """Precision metric.
+    Only computes a batch-wise average of precision.
+    Computes the precision, a metric for multi-label classification of
+    how many selected items are relevant.
+    """
+    y_true
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    return precision
+
+
+def recall(y_true, y_pred):
+    """Recall metric.
+    Only computes a batch-wise average of recall.
+    Computes the recall, a metric for multi-label classification of
+    how many relevant items are selected.
+    """
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    recall = true_positives / (possible_positives + K.epsilon())
+    return recall
+
+
+def fbeta_score(y_true, y_pred, beta=1):
+    """Computes the F score.
+    The F score is the weighted harmonic mean of precision and recall.
+    Here it is only computed as a batch-wise average, not globally.
+    This is useful for multi-label classification, where input samples can be
+    classified as sets of labels. By only using accuracy (precision) a model
+    would achieve a perfect score by simply assigning every class to every
+    input. In order to avoid this, a metric should penalize incorrect class
+    assignments as well (recall). The F-beta score (ranged from 0.0 to 1.0)
+    computes this, as a weighted mean of the proportion of correct class
+    assignments vs. the proportion of incorrect class assignments.
+    With beta = 1, this is equivalent to a F-measure. With beta < 1, assigning
+    correct classes becomes more important, and with beta > 1 the metric is
+    instead weighted towards penalizing incorrect class assignments.
+    """
+    if beta < 0:
+        raise ValueError('The lowest choosable beta is zero (only precision).')
+
+    # If there are no true positives, fix the F score at 0 like sklearn.
+    if K.sum(K.round(K.clip(y_true, 0, 1))) == 0:
+        return 0
+
+    p = precision(y_true, y_pred)
+    r = recall(y_true, y_pred)
+    bb = beta ** 2
+    fbeta_score = (1 + bb) * (p * r) / (bb * p + r + K.epsilon())
+    return fbeta_score
+
+
+def fmeasure2(y_true, y_pred):
+    """Computes the f-measure, the harmonic mean of precision and recall.
+    Here it is only computed as a batch-wise average, not globally.
+    """
+    return fbeta_score(y_true, y_pred, beta=1)
+
+
+def fmeasure(y_true, y_pred):
+    # (True, pred)
+    # NN, NO, NP
+    # ON, OO, OP
+    # PN, PO, PP
+
+    cm = confusion_matrix(y_pred, y_true)
+    print(cm)
+
+    NN = float(cm[0][0])
+    NO = float(cm[0][1])
+    NP = float(cm[0][2])
+
+    ON = float(cm[1][0])
+    OO = float(cm[1][1])
+    OP = float(cm[1][2])
+
+    PN = float(cm[2][0])
+    PO = float(cm[2][1])
+    PP = float(cm[2][2])
+
+    accuracy = float(format((NN + OO + PP) / (sum(sum(cm)) + np.finfo(float).eps), '.4f'))
+    precision_negative = float(format(NN / (sum(cm[:, 0]) + np.finfo(float).eps), '.4f'))
+    precision_positive = float(format(PP / (sum(cm[:, 2]) + np.finfo(float).eps), '.4f'))
+
+    recall_negative = float(format(NN / (sum(cm[0, :]) + np.finfo(float).eps), '.4f'))
+    recall_positive = float(format(PP / (sum(cm[2, :]) + np.finfo(float).eps), '.4f'))
+
+    F1_negative = float(
+        format(2 * precision_negative * recall_negative / (precision_negative + recall_negative + np.finfo(float).eps),
+               '.4f'))
+    F1_positive = float(
+        format(2 * precision_positive * recall_positive / (precision_positive + recall_positive + np.finfo(float).eps),
+               '.4f'))
+
+    print (F1_negative, F1_positive)
+    F1 = (F1_negative+F1_positive)/2
+
+    return accuracy, F1
+
 def evaluation_summary(model, x_trn, y_trn,
                        x_dev, y_dev,
                        x_tst, y_tst, eval_name, trn_score=None, dev_score=None):
 
-
     score_list = []
-    if trn_score is None:
-        y_trn_student_softmax_prediction = model.predict(x_trn, verbose=0, batch_size=1000)
-        y_trn_student_prediction = np.argmax(y_trn_student_softmax_prediction, axis=1)
-        trn_score = sum(y_trn_student_prediction == y_trn) * 1.0 / len(y_trn)
-        score_list.append(trn_score)
-    else:
-        score_list.append(trn_score)
+    y_trn_student_softmax_prediction = model.predict(x_trn, verbose=0, batch_size=1000)
+    y_trn_student_prediction = np.argmax(y_trn_student_softmax_prediction, axis=1)
+    acc_trn, f1_trn = fmeasure(y_trn, y_trn_student_prediction)
+    score_list.append(f1_trn)
 
-    print ('trn score=%f' % trn_score)
-
-
-    if dev_score is None:
-        y_dev_student_softmax_prediction = model.predict(x_dev, verbose=0, batch_size=1000)
-        y_dev_student_prediction = np.argmax(y_dev_student_softmax_prediction, axis=1)
-        dev_score = sum(y_dev_student_prediction == y_dev) * 1.0 / len(y_dev)
-        score_list.append(dev_score)
-    else:
-        score_list.append(dev_score)
-
-    print ('dev score=%f' % dev_score)
+    y_dev_student_softmax_prediction = model.predict(x_dev, verbose=0, batch_size=1000)
+    y_dev_student_prediction = np.argmax(y_dev_student_softmax_prediction, axis=1)
+    acc_dev, f1_dev = fmeasure(y_dev, y_dev_student_prediction)
+    score_list.append(f1_dev)
 
     y_tst_student_softmax_prediction = model.predict(x_tst, verbose=0, batch_size=1000)
     y_tst_student_prediction = np.argmax(y_tst_student_softmax_prediction, axis=1)
-    score = sum(y_tst_student_prediction == y_tst) * 1.0 / len(y_tst)
-    print ('tst score=%f' % score)
+    acc_tst, f1_tst = fmeasure(y_tst, y_tst_student_prediction)
+    score_list.append(f1_tst)
 
-    score_list.append(score)
+    # if trn_score is None:
+    #     # trn_score = model.evaluate(x_trn, y_trn, metric=[fmeasure], verbose=0, batch_size=1000)
+    #
+    #     # y_trn_student_softmax_prediction = model.predict(x_trn, verbose=0, batch_size=1000)
+    #     # y_trn_student_prediction = np.argmax(y_trn_student_softmax_prediction, axis=1)
+    #     # trn_score = sum(y_trn_student_prediction == y_trn) * 1.0 / len(y_trn)
+    #     score_list.append(trn_score)
+    # else:
+    #     score_list.append(trn_score)
+
+    print ('trn score=%f' % f1_trn)
+
+
+    # if dev_score is None:
+    #     # dev_score = model.evaluate(x_dev, y_dev, metric=[fmeasure], verbose=0, batch_size=1000)
+    #
+    #     y_dev_student_softmax_prediction = model.predict(x_dev, verbose=0, batch_size=1000)
+    #     y_dev_student_prediction = np.argmax(y_dev_student_softmax_prediction, axis=1)
+    #     dev_score = sum(y_dev_student_prediction == y_dev) * 1.0 / len(y_dev)
+    #     score_list.append(dev_score)
+    # else:
+    #     score_list.append(dev_score)
+
+    print ('dev score=%f' % f1_dev)
+
+    # y_tst_student_softmax_prediction = model.predict(x_tst, verbose=0, batch_size=1000)
+    # y_tst_student_prediction = np.argmax(y_tst_student_softmax_prediction, axis=1)
+    # score = sum(y_tst_student_prediction == y_tst) * 1.0 / len(y_tst)
+    print ('tst score=%f' % f1_tst)
+
+    # score_list.append(score)
 
     print('[summary] %s' % eval_name)
     print ('trn\tdev\ttst')
@@ -176,7 +297,7 @@ def run(attempt, gpunum, version):
     w2vdim = 400
     maxlen = 60
     batch_size = 200
-    epochs = 30
+    epochs = 50
 
     def CNNAttention_v1(model_input):
         print('model version V1')
@@ -350,7 +471,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-t', default=3, choices=range(10), type=int)
     parser.add_argument('-g', default="3", choices=["0", "1", "2", "3"], type=str)
-    parser.add_argument('-v', default=0, choices=[0,1,2], type=int)
+    parser.add_argument('-v', default=1, choices=[0,1,2], type=int)
     args = parser.parse_args()
 
     run(args.t, args.g, args.v)
