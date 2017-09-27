@@ -144,7 +144,7 @@ model.compile(loss="sparse_categorical_crossentropy", optimizer="adam", metrics=
 
 model.fit(y_hat_one_hot, y,
           shuffle=False,
-          batch_size=8,
+          batch_size=4,
           epochs=1)
 
 y_pred = model.predict(y_hat_one_hot)

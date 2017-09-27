@@ -128,7 +128,7 @@ def load_sst(dim, maxlen, source='file'):
     return (x_trn, y_trn), (x_dev, y_dev), (x_tst, y_tst), embedding, max_features
 
 
-def load_s17(dim, maxlen, source='file'):
+def load_s17(dim, maxlen, source='file', new_split=False):
     if source=='shm':
         max_features = 3676787
         embedding = SharedNPArray(shape=(max_features, 400), dtype=np.float32, tag='s17_embedding_%d' % dim,
@@ -151,20 +151,26 @@ def load_s17(dim, maxlen, source='file'):
         x_tst = x_tst._SharedNPArray__np_array
         y_tst = y_tst._SharedNPArray__np_array
 
-        x_newdev = np.concatenate((x_trn[11880:], x_dev))
-        y_newdev = np.concatenate((y_trn[11880:], y_dev))
+        if new_split is True:
+            x_newdev = np.concatenate((x_trn[11880:], x_dev))
+            y_newdev = np.concatenate((y_trn[11880:], y_dev))
 
-        x_newtrn = x_trn[:11880]
-        y_newtrn = y_trn[:11880]
+            x_newtrn = x_trn[:11880]
+            y_newtrn = y_trn[:11880]
 
-        x_trn = embedding[x_newtrn]
-        x_dev = embedding[x_newdev]
-        # x_trn = embedding[x_trn]
-        # x_dev = embedding[x_dev]
+            x_trn = embedding[x_newtrn]
+            x_dev = embedding[x_newdev]
+
+            y_trn = y_newtrn
+            y_dev = y_newdev
+
+        else:
+            x_trn = embedding[x_trn]
+            x_dev = embedding[x_dev]
+
         x_tst = embedding[x_tst]
 
-        y_trn = y_newtrn
-        y_dev = y_newdev
+
 
 
 
