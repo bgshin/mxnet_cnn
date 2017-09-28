@@ -479,7 +479,7 @@ def run(attempt, gpunum, version):
         model.summary()
 
     # checkpoint
-    filepath='./model/newbests17-%d-%d' % (w2vdim, attempt)
+    filepath='./model/newbests17-%d-v%d-%d' % (w2vdim, version, attempt)
 
     # checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
     # callbacks_list = [checkpoint]
@@ -490,7 +490,7 @@ def run(attempt, gpunum, version):
                   ))
 
 
-    checkpoint = MyCallback(filepath, data, real_save=False, monitor='val_f1', verbose=1, save_best_only=True,
+    checkpoint = MyCallback(filepath, data, real_save=True, monitor='val_f1', verbose=1, save_best_only=True,
                             mode='max')
     callbacks_list = [checkpoint]
 
