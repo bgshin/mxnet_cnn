@@ -105,7 +105,6 @@ class SentimentAnalysis():
 
     def preprocess_x(self, sentences):
         x_text = [line for line in sentences]
-        sentence_len_list = [len(line) for line in sentences]
         x = []
         for s in x_text:
             one_doc = []
@@ -118,6 +117,8 @@ class SentimentAnalysis():
             x.append(one_doc)
 
         x = np.array(x)
+        sentence_len_list = [len(sentence) for sentence in x]
+
         x = sequence.pad_sequences(x, maxlen=self.maxlen)
         x = self.embedding[x]
 
@@ -127,7 +128,18 @@ class SentimentAnalysis():
         x, sentence_len_list = self.preprocess_x(sentences)
         y = self.p_model.predict(x, batch_size=2000, verbose=0)
         attention_matrix = self.a_model.predict(x, batch_size=2000, verbose=0)
-        return y, attention_matrix
+
+        all_att = []
+        for sample_index in range(len(sentence_len_list)):
+            one_sample_att = []
+            for gram_index in range(5):
+                norm_one_sample = attention_matrix[gram_index][sample_index][0] / max(
+                    attention_matrix[gram_index][sample_index][0])
+                one_sample_att.append(norm_one_sample[-sentence_len_list[sample_index] + gram_index:])
+
+            all_att.append(one_sample_att)
+
+        return y, all_att
 
 
 
@@ -143,13 +155,25 @@ if __name__ == "__main__":
     sentences10000 = [sentence for i in range(10000)]
     sentences100000 = [sentence for i in range(100000)]
 
+    sentence = "I feel a little bit tired today , but I am really happy !"
+    sentence_neg = "Although the rain stopped , I hate this thick cloud in the sky ."
+
+    x_text = [line.split('\t')[2] for line in open('../data/s17/tst', "r").readlines()][:20]
+    x_text.append(sentence)
+    x_text.append(sentence_neg)
+
+
     with Timer("init..."):
         sa = SentimentAnalysis()
 
-    y, att = sa.decode([sentence, sentence_neg])
+    sentences = np.array(x_text)[[0,2,6,7,9,11,12,13,14,18,20,21]]
+    for sent in sentences:
+        print(sent)
+    y, att = sa.decode(sentences)
     with open('output.pkl', 'wb') as handle:
         pickle.dump(y, handle)
         pickle.dump(att, handle)
+        pickle.dump(sentences, handle)
 
     exit()
     for i in [1, 10, 100, 1000, 10000, 100000]:
